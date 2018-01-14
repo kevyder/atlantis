@@ -2,8 +2,10 @@ Game = {
     init: function() {
     },
     preload: function() {
+      game.load.image('background', 'assets/images/background.png');
     },
     create: function() {
+      game.add.sprite(0, 0, 'background');
     },
     update: function() {
     }
