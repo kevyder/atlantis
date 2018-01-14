@@ -6,9 +6,11 @@ Game = {
     },
     preload: function() {
       game.load.image('background', 'assets/images/background.png');
+      game.load.spritesheet('horse', 'assets/images/horse.png', 84, 156, 2)
     },
     create: function() {
       game.add.sprite(0, 0, 'background');
+      this.horse = game.add.sprite(0, 0, 'horse');
     },
     update: function() {
     }
