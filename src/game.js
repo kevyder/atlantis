@@ -10,6 +10,7 @@ Game = {
     game.load.image('background', 'assets/images/background.png');
     game.load.spritesheet('horse', 'assets/images/horse.png', 84, 156, 2);
     game.load.spritesheet('diamonds', 'assets/images/diamonds.png', 81, 84, 4);
+    game.load.image('explosion', 'assets/images/explosion.png');
   },
   create: function() {
     game.add.sprite(0, 0, 'background');
@@ -37,6 +38,18 @@ Game = {
         rectCurrentDiamond = this.getBoundsDiamond(diamond);
       }
     }
+    this.explosion = game.add.sprite(100, 100, 'explosion');
+    this.explosion.tweenScale = game.add.tween(this.explosion.scale).to({
+      x: [0.4, 0.8, 0.4],
+      y: [0.4, 0.8, 0.4]
+    }, 600, Phaser.Easing.Exponential.Out, false, 0, 0, false);
+
+    this.explosion.tweenAlpha = game.add.tween(this.explosion).to({
+      alpha: [1, 0.6, 0]
+    }, 600, Phaser.Easing.Exponential.Out, false, 0, 0, false);
+
+    this.explosion.anchor.setTo(0.5);
+    this.explosion.visible = false;
   },
   update: function() {
     if (this.flagfirstMouseDown) {
@@ -54,6 +67,19 @@ Game = {
 
       this.horse.x += distX * 0.03;
       this.horse.y += distY * 0.03;
+
+      for (var i = 0; i < AMOUNT_DIAMONDS; i++) {
+        var rectHorse = this.getBoundsHorse();
+        var rectDiamond = this.getBoundsDiamond(this.diamonds[i]);
+        if (this.diamonds[i].visible && this.isRectanglesOverlapping(rectHorse, rectDiamond)) {
+          this.diamonds[i].visible = false;
+          this.explosion.visible = true;
+          this.explosion.x = this.diamonds[i].x;
+          this.explosion.y = this.diamonds[i].y;
+          this.explosion.tweenScale.start();
+          this.explosion.tweenAlpha.start();
+        }
+      }
     }
   },
   onTap: function() {
@@ -79,6 +105,14 @@ Game = {
       }
     }
     return false;
+  },
+  getBoundsHorse: function() {
+    var x0 = this.horse.x - Math.abs(this.horse.width) / 4;
+    var width = Math.abs(this.horse.width) / 2;
+    var y0 = this.horse.y - this.horse.height / 2;
+    var height = this.horse.height;
+
+    return new Phaser.Rectangle(x0, y0, width, height)
   }
 }
 
