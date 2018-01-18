@@ -5,6 +5,8 @@ Game = {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
     this.flagfirstMouseDown = false;
+    this.amountDiamondsCaught = 0;
+    this.endGame = false;
   },
   preload: function() {
     game.load.image('background', 'assets/images/background.png');
@@ -65,7 +67,7 @@ Game = {
     this.scoreText.anchor.setTo(0.5);
   },
   update: function() {
-    if (this.flagfirstMouseDown) {
+    if (this.flagfirstMouseDown && !this.endGame) {
       var pointerX = game.input.x;
       var pointerY = game.input.y;
 
@@ -136,6 +138,27 @@ Game = {
   increaseScore:function() {
     this.currentScore += 100;
     this.scoreText.text = this.currentScore;
+    this.amountDiamondsCaught++;
+    if (this.amountDiamondsCaught >= AMOUNT_DIAMONDS){
+      this.endGame = true;
+      this.showFinalMessage('YOU WIN');
+    }
+  },
+  showFinalMessage: function(message){
+    var bgAlpha = game.add.bitmapData(game.width, game.height);
+    bgAlpha.ctx.fillStyle = '#000000';
+    bgAlpha.ctx.fillRect(0, 0, game.width, game.height);
+    var bg = game.add.sprite(0, 0, bgAlpha);
+    bg.alpha = 0.5;
+
+    var style = {
+      font: 'bold 60pt Arial',
+      fill: '#FFFFFF',
+      align: 'center'
+    }
+
+    this.textFieldFinalMsg = game.add.text(game.width/2, game.heigth/2, message, style);
+    this.textFieldFinalMsg.anchor.setTo(0.5);
   }
 }
 
