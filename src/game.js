@@ -63,8 +63,24 @@ Game = {
       fill: '#FFFFFF',
       align: 'center'
     }
-    this.scoreText = game.add.text(game.width/2, 40, '0', style)
+    this.scoreText = game.add.text(game.width / 2, 40, '0', style);
     this.scoreText.anchor.setTo(0.5);
+
+    this.totalTime = 30;
+    this.timerText = game.add.text(1000, 40, this.totalTime, style);
+    this.timerText.anchor.setTo(0.5);
+
+    this.timerGameOver = game.time.events.loop(Phaser.Timer.SECOND, function() {
+      if (this.flagfirstMouseDown) {
+        this.totalTime--;
+        this.timerText.text = this.totalTime
+        if (this.totalTime <= 0) {
+          game.time.events.remove(this.timerGameOver);
+          this.endGame = true;
+          this.showFinalMessage('GAME OVER');
+        }
+      }
+    }, this);
   },
   update: function() {
     if (this.flagfirstMouseDown && !this.endGame) {
@@ -95,7 +111,7 @@ Game = {
             explosion.reset(this.diamonds[i].x, this.diamonds[i].y)
             explosion.tweenScale.start();
             explosion.tweenAlpha.start();
-            explosion.tweenAlpha.onComplete.add(function(currentTarget, currentTween){
+            explosion.tweenAlpha.onComplete.add(function(currentTarget, currentTween) {
               currentTarget.kill();
             }, this)
           }
@@ -135,16 +151,17 @@ Game = {
 
     return new Phaser.Rectangle(x0, y0, width, height)
   },
-  increaseScore:function() {
+  increaseScore: function() {
     this.currentScore += 100;
     this.scoreText.text = this.currentScore;
     this.amountDiamondsCaught++;
-    if (this.amountDiamondsCaught >= AMOUNT_DIAMONDS){
+    if (this.amountDiamondsCaught >= AMOUNT_DIAMONDS) {
+      game.time.events.remove(this.timerGameOver);
       this.endGame = true;
       this.showFinalMessage('YOU WIN');
     }
   },
-  showFinalMessage: function(message){
+  showFinalMessage: function(message) {
     var bgAlpha = game.add.bitmapData(game.width, game.height);
     bgAlpha.ctx.fillStyle = '#000000';
     bgAlpha.ctx.fillRect(0, 0, game.width, game.height);
@@ -157,8 +174,8 @@ Game = {
       align: 'center'
     }
 
-    this.textFieldFinalMsg = game.add.text(game.width/2, game.heigth/2, message, style);
-    this.textFieldFinalMsg.anchor.setTo(0.5);
+    this.textFieldFinalMsg = game.add.text(game.width / 2, game.heigth / 2, message, style);
+    // this.textFieldFinalMsg.anchor.setTo(0.5);
   }
 }
 
